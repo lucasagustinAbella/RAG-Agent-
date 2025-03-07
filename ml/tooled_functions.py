@@ -3,23 +3,30 @@ from tools.imdb_fetcher import get_movie_info
 from tools.youtube_search import search_youtube_trailer
 
 
-def fetch_movie_details(movie_title: str):
-    imdb_data = get_movie_info(movie_title)
-    youtube_trailer = search_youtube_trailer(movie_title)
+class Tool:
+    def __init__(self, name, func, description):
+        self.name = name
+        self.func = func
+        self.description = description
 
-    web_results = []
+    def execute(self, *args, **kwargs):
+        return self.func(*args, **kwargs)
 
-    try:
-        web_results = search_web(movie_title)
-    except Exception as e:
-        print(
-            f"Error with DuckDuckGo search: {e}. Using available data without web search."
-        )
 
-    result = {
-        "imdb": imdb_data,
-        "trailer": youtube_trailer,
-        "web_results": web_results,
-    }
-
-    return result
+tools = [
+    Tool(
+        name="IMDb",
+        func=get_movie_info,
+        description="Retrieves detailed information about a movie or TV show, such as title, year, rating, genres, plot, and the IMDb link.",
+    ),
+    Tool(
+        name="YouTube",
+        func=search_youtube_trailer,
+        description="Searches for the official trailer of a movie or TV show. The query should be about the movie/TV show title and 'official trailer'.",
+    ),
+    Tool(
+        name="Web Search",
+        func=search_web,
+        description="Searches the web for general information about a movie or TV show, looking for reviews, summaries, ratings, etc.",
+    ),
+]
