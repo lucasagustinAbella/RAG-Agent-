@@ -14,7 +14,7 @@ class RAGAgent:
 
     def process_query(self, query: str):
         results = fetch_movie_details(query)
-        response = self.llm(
+        response = self.llm.invoke(
             [
                 HumanMessage(
                     content=f"Information found about '{query}': {results['imdb']}. Trailer: {results['trailer']}"
