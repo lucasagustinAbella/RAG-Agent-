@@ -1,13 +1,10 @@
 import os
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 from .tooled_functions import fetch_movie_details
 from dotenv import load_dotenv
 
-# Load environment variables from the .env file
 load_dotenv()
-
-# Access the environment variable
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
@@ -16,12 +13,7 @@ class RAGAgent:
         self.llm = ChatOpenAI(model_name="gpt-4", openai_api_key=OPENAI_API_KEY)
 
     def process_query(self, query: str):
-        """Processes the user's query and decides which tool to use."""
-
-        # Fetch movie details
         results = fetch_movie_details(query)
-
-        # Generate response using LLM
         response = self.llm(
             [
                 HumanMessage(

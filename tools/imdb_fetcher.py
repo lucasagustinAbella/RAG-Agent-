@@ -2,14 +2,13 @@ import imdb
 
 
 def get_movie_info(title: str):
-    """Searches for movie or TV show information on IMDb."""
     ia = imdb.Cinemagoer()
 
     search_results = ia.search_movie(title)
     if not search_results:
         return None
 
-    movie = search_results[0]  # Take the first result
+    movie = search_results[0]
     movie_id = movie.movieID
     movie_details = ia.get_movie(movie_id)
 

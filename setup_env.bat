@@ -1,17 +1,17 @@
 @echo off
-REM Verificar si el entorno virtual existe
+REM 
 IF NOT EXIST .venv (
-    echo Creando entorno virtual...
+    echo Creating virtual environment...
     python -m venv .venv
 )
 
-REM Activar el entorno virtual
-echo Activando entorno virtual...
+REM 
+echo Activating virtual environment...
 call .\.venv\Scripts\activate
 
-REM Instalar dependencias desde requirements.txt
-echo Instalando dependencias...
+REM Install dependencies from requirements.txt
+echo Installing dependencies...
 pip install -r requirements.txt
 
-echo Configuración completa. El entorno virtual ha sido configurado.
+echo Setup complete. The virtual environment has been configured.
 pause
