@@ -23,7 +23,7 @@ pip install -r requirements.txt
 
 ### Running the Agent
 
-Run the following commands in the terminal while been located on the root folder
+Run the following commands in the terminal while been located on the root folder, u only need the GUI to run the full code
 
 To start the main process:
 

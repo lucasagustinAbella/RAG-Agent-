@@ -5,9 +5,9 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QTextBrowser,
     QPushButton,
-    QLabel,
 )
 from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtGui import QTextCursor
 from ml.rag_agent import RAGAgent
 
 
@@ -27,60 +27,70 @@ class QueryThread(QThread):
         self.result_ready.emit(result)
 
 
-class RAGApp(QWidget):
+class RAGChat(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle("🎬 RAG Movie Search")
+        self.setWindowTitle("🎬 RAG Chat")
         self.setGeometry(100, 100, 600, 400)
 
         layout = QVBoxLayout()
 
+        self.chat_display = QTextBrowser(self)
+        self.chat_display.setOpenExternalLinks(True)
+        self.chat_display.setStyleSheet(
+            "background-color: #f4f4f4; padding: 10px; border-radius: 10px;"
+        )
+        layout.addWidget(self.chat_display)
+
         self.query_input = QLineEdit(self)
-        self.query_input.setPlaceholderText("Enter a movie or TV show...")
+        self.query_input.setPlaceholderText("Ask about a movie or TV show...")
+        self.query_input.setStyleSheet(
+            "padding: 8px; border-radius: 10px; border: 1px solid #ccc;"
+        )
         layout.addWidget(self.query_input)
 
-        self.search_button = QPushButton("🔍 Search", self)
-        self.search_button.clicked.connect(self.run_query)
-        layout.addWidget(self.search_button)
-
-        self.result_display = QTextBrowser(self)
-        self.result_display.setOpenExternalLinks(True)
-        layout.addWidget(self.result_display)
-
-        self.tool_label = QLabel(self)
-        layout.addWidget(self.tool_label)
+        self.send_button = QPushButton("Send", self)
+        self.send_button.setStyleSheet(
+            "background-color: #007bff; color: white; padding: 8px; border-radius: 10px;"
+        )
+        self.send_button.clicked.connect(self.run_query)
+        layout.addWidget(self.send_button)
 
         self.setLayout(layout)
 
     def run_query(self):
         query = self.query_input.text().strip()
         if query:
-            self.result_display.setText("🔍 Searching... Please wait.")
-            self.tool_label.setText("")
-            self.search_button.setEnabled(False)
+            self.append_message("🧑‍💻 You", query, "#d1e7dd")
+            self.query_input.clear()
 
             self.query_thread = QueryThread(query)
             self.query_thread.result_ready.connect(self.display_response)
             self.query_thread.start()
 
     def display_response(self, result):
-        self.search_button.setEnabled(True)
         ai_response = result.get("ai_response", "No AI response available.")
         tools_used = result.get("tools_used", "Unknown Tools")
-
-        final_text = (
-            f"<b>🛠️ Tools Used: {tools_used}</b><br><br>"
-            f"<b>📚 Result:</b><br>{ai_response}"
+        formatted_response = (
+            f"<div style='background-color: #e1f5fe; padding: 10px; border-radius: 10px; margin: 5px 0;'>"
+            f"<b>🤖 AI</b> | 🛠️ <b>Tools Used:</b> {tools_used}<br><br>{ai_response}</div>"
         )
 
-        self.result_display.setHtml(final_text)
+        self.chat_display.setHtml(self.chat_display.toHtml() + formatted_response)
+
+    def append_message(self, sender, message, bg_color):
+        formatted_message = (
+            f"<div style='background-color: {bg_color}; padding: 10px; border-radius: 10px; margin: 5px 0;'>"
+            f"<b>{sender}:</b> {message}</div>"
+        )
+        self.chat_display.setHtml(self.chat_display.toHtml() + formatted_message)
 
 
 if __name__ == "__main__":
     app = QApplication([])
-    window = RAGApp()
+    window = RAGChat()
     window.show()
     app.exec()

@@ -10,6 +10,7 @@ def search_web(query: str, max_results=5):
         "summary",
         "ratings",
         "critique",
+        "actors",
     ]
     results = []
 
